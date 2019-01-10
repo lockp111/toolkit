@@ -51,6 +51,20 @@ func QueryFilter(filterMap map[string]interface{}) *ArgsFilter {
 	}
 }
 
+// Update ...
+func (f *ArgsFilter) Update(field string,
+	filterField string) *ArgsFilter {
+	if f.filterMap == nil {
+		return f
+	}
+
+	value, ok := f.filterMap[filterField]
+	if ok {
+		f.ex[field] = value
+	}
+	return f
+}
+
 // Ex ...
 func (f *ArgsFilter) Ex() map[string]interface{} {
 	return f.ex
