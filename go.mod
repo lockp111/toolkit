@@ -31,7 +31,7 @@ require (
 	github.com/micro/cli v0.0.0-20181223203424-1b0c9793c300
 	github.com/micro/go-config v0.13.1
 	github.com/micro/go-log v0.0.0-20170512141327-cbfa9447f9b6 // indirect
-	github.com/micro/go-micro v0.17.0
+	github.com/micro/go-micro v0.13.0
 	github.com/micro/go-rcache v0.0.0-20180418165751-a581a57b5133 // indirect
 	github.com/micro/h2c v1.0.0 // indirect
 	github.com/micro/mdns v0.0.0-20181201230301-9c3770d4057a // indirect
@@ -51,6 +51,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc // indirect
 	golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e // indirect
 	golang.org/x/sys v0.0.0-20190108104531-7fbe1cd0fcc2 // indirect
+	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/doug-martin/goqu.v5 v5.0.0
 	gopkg.in/yaml.v2 v2.2.2 // indirect
