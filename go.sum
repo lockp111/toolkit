@@ -59,8 +59,7 @@ github.com/micro/go-config v0.13.1 h1:xuiOe3F6QjBOr4dRu6VNfZo7/yfck8coXBFyEL+YxC
 github.com/micro/go-config v0.13.1/go.mod h1:fVecLls1kW+EJsrlkJYqUmVoJa1epSHhsPMDXppELx0=
 github.com/micro/go-log v0.0.0-20170512141327-cbfa9447f9b6 h1:Nz+rX1q6rJLAQcLBB6maXYUmSvcdzJR2OArDKCDkco4=
 github.com/micro/go-log v0.0.0-20170512141327-cbfa9447f9b6/go.mod h1:QikSuviYcIE8V0CY4e0RRqVs3Oh8EuzX+qCEOnh9Qh8=
-github.com/micro/go-micro v0.13.0 h1:j5jM3XFNJc2v7gGvBS6dwCKPEQ4TT/Xq8X3dSQPOjfo=
-github.com/micro/go-micro v0.13.0/go.mod h1:3z3lfMkNU9Sr1L/CxL++8pVJmQapRo0N6kNjwYDtOVs=
+github.com/micro/go-micro v0.17.0/go.mod h1:3z3lfMkNU9Sr1L/CxL++8pVJmQapRo0N6kNjwYDtOVs=
 github.com/micro/go-rcache v0.0.0-20180418165751-a581a57b5133 h1:hA0jzfRMat31ugTTK3BQfxGSuh7zD4Or/lEo/4edJiE=
 github.com/micro/go-rcache v0.0.0-20180418165751-a581a57b5133/go.mod h1:CBzgfnsCYHcyLg1qeTShF0iDErQmcLmSt+SdwjLkckI=
 github.com/micro/h2c v1.0.0 h1:ejw6MS5+WaUoMHRtqkVCCrrVzLMzOFEH52rEyd8Fl2I=

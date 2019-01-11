@@ -31,7 +31,7 @@ require (
 	github.com/micro/cli v0.0.0-20181223203424-1b0c9793c300
 	github.com/micro/go-config v0.13.1
 	github.com/micro/go-log v0.0.0-20170512141327-cbfa9447f9b6 // indirect
-	github.com/micro/go-micro v0.13.0
+	github.com/micro/go-micro v0.17.0
 	github.com/micro/go-rcache v0.0.0-20180418165751-a581a57b5133 // indirect
 	github.com/micro/h2c v1.0.0 // indirect
 	github.com/micro/mdns v0.0.0-20181201230301-9c3770d4057a // indirect
