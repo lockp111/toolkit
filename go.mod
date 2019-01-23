@@ -25,7 +25,6 @@ require (
 	github.com/imdario/mergo v0.3.6 // indirect
 	github.com/jinzhu/gorm v1.9.2
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
-	github.com/json-iterator/go v1.1.5
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
 	github.com/micro/cli v0.0.0-20181223203424-1b0c9793c300

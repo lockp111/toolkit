@@ -1,13 +1,11 @@
 package errors
 
 import (
+	"encoding/json"
 	"net/http"
 
-	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
 )
-
-var fastjson = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // APIError ...
 type APIError struct {
@@ -36,15 +34,15 @@ func ParseAPIError(err error) *APIError {
 }
 
 func (e *APIError) Error() string {
-	b, _ := fastjson.Marshal(e)
+	b, _ := json.Marshal(e)
 	return string(b)
 }
 
 // Parse ...
 func Parse(err string) *APIError {
-	if fastjson.Valid([]byte(err)) {
+	if json.Valid([]byte(err)) {
 		api := new(APIError)
-		e := fastjson.Unmarshal([]byte(err), api)
+		e := json.Unmarshal([]byte(err), api)
 		if e != nil {
 			api.Detail = err
 		}
