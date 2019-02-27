@@ -28,7 +28,7 @@ func init() {
 
 	Dir = filepath.Dir(dir + "..")
 
-	LogDir = Dir + "/log/"
+	LogDir = Dir + "/logs/"
 	if !isPathExist(LogDir) {
 		if err := os.MkdirAll(LogDir, os.ModePerm); err != nil {
 			utils.ErrExit(err)
