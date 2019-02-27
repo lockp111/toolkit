@@ -93,6 +93,7 @@ require (
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/sirupsen/logrus v1.3.0
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
+	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/doug-martin/goqu.v5 v5.0.0
 	gopkg.in/gorethink/gorethink.v4 v4.1.0 // indirect

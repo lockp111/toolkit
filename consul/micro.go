@@ -29,14 +29,17 @@ func GetRegistryAddress() string {
 }
 
 // InitSource Directly init source. Use it without micro service
-func InitSource(addr, prefix string) {
-	configPrefix = prefix
+func InitSource(addr string, prefix ...string) {
 	registryAddress = addr
-	consulSrouce = consul.NewSource(
-		consul.WithAddress(registryAddress),
-		consul.WithPrefix(configPrefix),
-		consul.StripPrefix(true),
-	)
+	var opts = []source.Option{consul.WithAddress(registryAddress)}
+	if len(prefix) != 0 {
+		configPrefix = prefix[0]
+		opts = append(opts,
+			consul.WithPrefix(configPrefix),
+			consul.StripPrefix(true),
+		)
+	}
+	consulSrouce = consul.NewSource(opts...)
 }
 
 // ConfigGet ...
