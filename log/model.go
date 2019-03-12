@@ -2,11 +2,11 @@ package log
 
 import (
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/fatih/structs"
 	"github.com/jinzhu/gorm"
-	"github.com/pkg/errors"
 )
 
 // Logs ...
