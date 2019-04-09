@@ -76,7 +76,7 @@ func SettingLog(config *Config) error {
 			logrus.FatalLevel: w,
 			logrus.PanicLevel: w,
 		},
-			&logrus.JSONFormatter{},
+			&logrus.TextFormatter{},
 		))
 	}
 
