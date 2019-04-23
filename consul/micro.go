@@ -1,6 +1,7 @@
 package consul
 
 import (
+	"os"
 	"strings"
 
 	"github.com/micro/go-config"
@@ -11,9 +12,9 @@ import (
 )
 
 var (
-	consulSrouce    source.Source
-	configPrefix    string
-	registryAddress string
+	consulSrouce source.Source
+	configPrefix string
+	consulAddr   = os.Getenv("CONSULADDR")
 )
 
 func getPrefixedPath(path ...string) []string {
@@ -23,15 +24,15 @@ func getPrefixedPath(path ...string) []string {
 	return path
 }
 
-// GetRegistryAddress ..
-func GetRegistryAddress() string {
-	return registryAddress
+// GetConsulAddress ..
+func GetConsulAddress() string {
+	return consulAddr
 }
 
 // InitSource Directly init source. Use it without micro service
 func InitSource(addr string, prefix ...string) {
-	registryAddress = addr
-	var opts = []source.Option{consul.WithAddress(registryAddress)}
+	consulAddr = addr
+	var opts = []source.Option{consul.WithAddress(consulAddr)}
 	if len(prefix) != 0 {
 		configPrefix = prefix[0]
 		opts = append(opts,
