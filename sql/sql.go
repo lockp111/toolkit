@@ -169,7 +169,7 @@ func (db *DataBase) PageQuery(query *goqu.Dataset, scaner *gorm.DB, pageIndex in
 		Offset(uint((pageIndex - 1) * pageSize)).
 		Limit(uint(pageSize))
 
-	sql, args, err := selectQuery.ToSql()
+	sql, args, err := selectQuery.Prepared(true).ToSql()
 	if err != nil {
 		return 0, err
 	}
@@ -215,7 +215,7 @@ func (db *DataBase) Query(query *goqu.Dataset, scaner *gorm.DB,
 		selectQuery = query.Select(selectEx...)
 	}
 
-	sql, args, err := selectQuery.ToSql()
+	sql, args, err := selectQuery.Prepared(true).ToSql()
 	if err != nil {
 		return err
 	}
@@ -237,7 +237,7 @@ func (db *DataBase) QueryScan(query *goqu.Dataset,
 		selectQuery = query.Select(selectEx...)
 	}
 
-	sql, args, err := selectQuery.ToSql()
+	sql, args, err := selectQuery.Prepared(true).ToSql()
 	if err != nil {
 		return err
 	}
@@ -261,7 +261,7 @@ func (db *DataBase) QueryFirst(query *goqu.Dataset, scaner *gorm.DB,
 		selectQuery = query.Select(selectEx...)
 	}
 
-	sql, args, err := selectQuery.ToSql()
+	sql, args, err := selectQuery.Prepared(true).ToSql()
 	if err != nil {
 		return err
 	}
@@ -282,7 +282,7 @@ func (db *DataBase) QueryRows(sqlBuilder *goqu.Dataset, scaner *gorm.DB,
 	if selectEx != nil {
 		selectQuery = selectQuery.Select(selectEx...)
 	}
-	sql, args, err := selectQuery.ToSql()
+	sql, args, err := selectQuery.Prepared(true).ToSql()
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +291,7 @@ func (db *DataBase) QueryRows(sqlBuilder *goqu.Dataset, scaner *gorm.DB,
 
 // DebugSQL ...
 func DebugSQL(sqlBuilder *goqu.Dataset) string {
-	sql, args, err := sqlBuilder.ToSql()
+	sql, args, err := sqlBuilder.Prepared(true).ToSql()
 	return fmt.Sprint("Sql:", sql, args, err)
 }
 
