@@ -11,14 +11,27 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	consulSrouce source.Source
-	configPrefix string
-	consulAddr   = os.Getenv("CONSULADDR")
-)
+type conf struct {
+	source  source.Source
+	prefix  string
+	address string
+}
+
+var consulConf *conf
+
+func init() {
+	addr := os.Getenv("CONSULADDR")
+	if len(addr) == 0 {
+		addr = "127.0.0.1:8500"
+	}
+
+	consulConf = &conf{
+		address: addr,
+	}
+}
 
 func getPrefixedPath(path ...string) []string {
-	prefixPaths := strings.Split(configPrefix, "/")
+	prefixPaths := strings.Split(consulConf.prefix, "/")
 	path = append(prefixPaths[1:], path...)
 
 	return path
@@ -26,27 +39,27 @@ func getPrefixedPath(path ...string) []string {
 
 // GetConsulAddress ..
 func GetConsulAddress() string {
-	return consulAddr
+	return consulConf.address
 }
 
 // InitSource Directly init source. Use it without micro service
 func InitSource(addr string, prefix ...string) {
-	consulAddr = addr
-	var opts = []source.Option{consul.WithAddress(consulAddr)}
+	consulConf.address = addr
+	var opts = []source.Option{consul.WithAddress(consulConf.address)}
 	if len(prefix) != 0 {
-		configPrefix = prefix[0]
+		consulConf.prefix = prefix[0]
 		opts = append(opts,
-			consul.WithPrefix(configPrefix),
+			consul.WithPrefix(consulConf.prefix),
 			consul.StripPrefix(true),
 		)
 	}
-	consulSrouce = consul.NewSource(opts...)
+	consulConf.source = consul.NewSource(opts...)
 }
 
 // ConfigGet ...
 func ConfigGet(x interface{}, path ...string) error {
 	conf := config.NewConfig()
-	if err := conf.Load(consulSrouce); err != nil {
+	if err := conf.Load(consulConf.source); err != nil {
 		return err
 	}
 
@@ -63,7 +76,7 @@ func ConfigGet(x interface{}, path ...string) error {
 // ConfigWatch ...
 func ConfigWatch(scanFunc func(reader.Value), path ...string) error {
 	conf := config.NewConfig()
-	if err := conf.Load(consulSrouce); err != nil {
+	if err := conf.Load(consulConf.source); err != nil {
 		return err
 	}
 
