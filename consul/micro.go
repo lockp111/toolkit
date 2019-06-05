@@ -1,9 +1,11 @@
 package consul
 
 import (
+	"encoding/json"
 	"os"
 	"strings"
 
+	"github.com/hashicorp/consul/api"
 	"github.com/micro/go-micro/config"
 	"github.com/micro/go-micro/config/reader"
 	"github.com/micro/go-micro/config/source"
@@ -37,8 +39,8 @@ func getPrefixedPath(path ...string) []string {
 	return path
 }
 
-// GetConsulAddress ..
-func GetConsulAddress() string {
+// GetAddress ..
+func GetAddress() string {
 	return consulConf.address
 }
 
@@ -105,4 +107,26 @@ func ConfigWatch(scanFunc func(reader.Value), path ...string) error {
 	}()
 
 	return nil
+}
+
+// Sync ...
+func Sync(service string, conf interface{}) error {
+	data, _ := json.MarshalIndent(conf, "", "\t")
+
+	apiConf := api.DefaultConfig()
+	apiConf.Address = consulConf.address
+
+	// Get a new client
+	client, err := api.NewClient(apiConf)
+	if err != nil {
+		return err
+	}
+
+	// Get a handle to the KV API
+	kv := client.KV()
+
+	// PUT a new KV pair
+	p := &api.KVPair{Key: service, Value: data}
+	_, err = kv.Put(p, nil)
+	return err
 }
