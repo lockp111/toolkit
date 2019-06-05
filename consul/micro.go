@@ -4,10 +4,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/micro/go-config"
-	"github.com/micro/go-config/reader"
-	"github.com/micro/go-config/source"
-	"github.com/micro/go-config/source/consul"
+	"github.com/micro/go-micro/config"
+	"github.com/micro/go-micro/config/reader"
+	"github.com/micro/go-micro/config/source"
+	"github.com/micro/go-micro/config/source/consul"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,7 +20,7 @@ type conf struct {
 var consulConf *conf
 
 func init() {
-	addr := os.Getenv("CONSULADDR")
+	addr := os.Getenv("CONSUL_ADDR")
 	if len(addr) == 0 {
 		addr = "127.0.0.1:8500"
 	}
