@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"reflect"
 
+	goqu "github.com/doug-martin/goqu/v6"
+	_ "github.com/doug-martin/goqu/v6/adapters/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	goqu "gopkg.in/doug-martin/goqu.v5"
-	_ "gopkg.in/doug-martin/goqu.v5/adapters/mysql"
 )
 
 // QueryOp ..

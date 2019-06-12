@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
+	github.com/doug-martin/goqu/v6 v6.1.0
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/go-sql-driver/mysql v1.4.1
@@ -20,5 +20,7 @@ require (
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.4.2
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
-	gopkg.in/doug-martin/goqu.v5 v5.0.0
+	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8 // indirect
+	golang.org/x/net v0.0.0-20190611141213-3f473d35a33a // indirect
+	golang.org/x/sys v0.0.0-20190610200419-93c9922d18ae // indirect
 )
