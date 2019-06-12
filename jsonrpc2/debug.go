@@ -91,3 +91,8 @@ func (server debugHTTP) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "rpc: error executing template:", err.Error())
 	}
 }
+
+// DebugLog open debuglog
+func DebugLog(isOpen bool) {
+	debugLog = isOpen
+}

@@ -130,13 +130,14 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/lockp111/toolkit/log"
 )
 
 const (
@@ -450,43 +451,47 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 
 	for {
 		service, mtype, req, argv, replyv, keepReading, err := server.readRequest(codec)
-		if err != nil {
-			if debugLog && err != io.EOF {
-				log.Println("rpc:", err)
-			}
-			if !keepReading {
-				break
-			}
-
-			switch err.(type) {
-			case ErrMissingServiceMethod:
-				if server.onMissingMethod != nil {
-					method, params := codec.GetCurrentRequest()
-					go func() {
-						var errMsg string
-						reply, err := server.onMissingMethod(conn, method, params)
-						if err != nil {
-							errMsg = err.Error()
-						}
-						server.sendResponse(sending, req, reply, codec, errMsg)
-						server.freeRequest(req)
-					}()
-				} else {
-					if req != nil {
-						server.sendResponse(sending, req, invalidRequest, codec, err.Error())
-						server.freeRequest(req)
-					}
-				}
-			default:
-				// send a response if we actually managed to read a header.
-				if req != nil {
-					server.sendResponse(sending, req, invalidRequest, codec, err.Error())
-					server.freeRequest(req)
-				}
-			}
+		if err == nil {
+			go service.call(server, sending, mtype, conn, req, argv, replyv, codec)
 			continue
 		}
-		go service.call(server, sending, mtype, conn, req, argv, replyv, codec)
+
+		if debugLog && err != io.EOF {
+			log.Println("rpc:", err)
+		}
+		if !keepReading {
+			break
+		}
+
+		switch err.(type) {
+		case ErrMissingServiceMethod:
+			if server.onMissingMethod != nil {
+				method, params := codec.GetCurrentRequest()
+				go func() {
+					var (
+						errMsg string
+						reply  interface{}
+						err    error
+					)
+
+					reply, err = server.onMissingMethod(conn, method, params)
+					if err != nil {
+						errMsg = err.Error()
+					}
+
+					server.sendResponse(sending, req, reply, codec, errMsg)
+					server.freeRequest(req)
+				}()
+				continue
+			}
+		}
+
+		// send a response if we actually managed to read a header.
+		if req != nil {
+			server.sendResponse(sending, req, invalidRequest, codec, err.Error())
+			server.freeRequest(req)
+		}
+
 	}
 
 	conn.ternimating()
