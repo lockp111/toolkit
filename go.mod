@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/hashicorp/consul/api v1.1.0
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
-	github.com/jinzhu/gorm v1.9.8
+	github.com/jinzhu/gorm v1.9.9
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f

@@ -113,8 +113,14 @@ func (c *serverCodec) ReadRequestBody(x interface{}) error {
 	return nil
 }
 
-func (c *serverCodec) GetCurrentRequest() (string, json.RawMessage) {
-	return c.req.Method, *c.req.Params
+// GetParams ...
+func (c *serverCodec) GetParams() json.RawMessage {
+	return *c.req.Params
+}
+
+// GetMethod
+func (c *serverCodec) GetMethod() string {
+	return c.req.Method
 }
 
 var null = json.RawMessage([]byte("null"))

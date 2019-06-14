@@ -166,6 +166,14 @@ type service struct {
 	method map[string]*methodType // registered methods
 }
 
+// Args for Call
+type Args struct {
+	ServerReq *Request
+	Codec     ServerCodec
+	Arg       reflect.Value
+	Reply     reflect.Value
+}
+
 // Request is a header written before every RPC call. It is used internally
 // but documented here as an aid to debugging, such as when analyzing
 // network traffic.
@@ -187,6 +195,10 @@ type Response struct {
 
 type ConnHandler func(*Conn)
 
+type ServiceHandler func(*methodType, *Conn, *Args) (interface{}, error)
+
+type WrapHandler func(ServiceHandler) ServiceHandler
+
 // Server represents an RPC Server.
 type Server struct {
 	mu         sync.RWMutex // protects the serviceMap
@@ -198,6 +210,7 @@ type Server struct {
 
 	onConnInit      ConnHandler
 	onMissingMethod MissingMethodFunc
+	onWrap          WrapHandler
 }
 
 // conn, method, params
@@ -231,6 +244,10 @@ func (server *Server) OnConnInit(handler ConnHandler) {
 
 func (server *Server) OnMissingMethod(handler MissingMethodFunc) {
 	server.onMissingMethod = handler
+}
+
+func (server *Server) OnWrap(handler WrapHandler) {
+	server.onWrap = handler
 }
 
 // Is this type exported or a builtin?
@@ -390,12 +407,12 @@ func suitableMethods(typ reflect.Type, reportErr bool) map[string]*methodType {
 // contains an error when it is used.
 var invalidRequest = struct{}{}
 
-func (server *Server) sendResponse(sending *sync.Mutex, req *Request, reply interface{}, codec ServerCodec, errmsg string) {
+func (server *Server) sendResponse(sending *sync.Mutex, req *Request, reply interface{}, codec ServerCodec, errMsg error) {
 	resp := server.getResponse()
 	// Encode the response header
 	resp.ServiceMethod = req.ServiceMethod
-	if errmsg != "" {
-		resp.Error = errmsg
+	if errMsg != nil {
+		resp.Error = errMsg.Error()
 		reply = invalidRequest
 	}
 	resp.Seq = req.Seq
@@ -415,25 +432,23 @@ func (m *methodType) NumCalls() (n uint) {
 	return n
 }
 
-func (s *service) call(server *Server, sending *sync.Mutex, mtype *methodType,
-	conn *Conn, req *Request, argv, replyv reflect.Value,
-	codec ServerCodec,
-) {
+func (s *service) call(mtype *methodType, conn *Conn, args *Args,
+) (resp interface{}, err error) {
 	mtype.Lock()
 	mtype.numCalls++
 	mtype.Unlock()
 	function := mtype.method.Func
 	// Invoke the method, providing a new value for the reply.
 	returnValues := function.Call([]reflect.Value{s.rcvr,
-		reflect.ValueOf(conn), argv, replyv})
+		reflect.ValueOf(conn), args.Arg, args.Reply})
 	// The return value for the method is an error.
 	errInter := returnValues[0].Interface()
-	errmsg := ""
 	if errInter != nil {
-		errmsg = errInter.(error).Error()
+		err = errInter.(error)
 	}
-	server.sendResponse(sending, req, replyv.Interface(), codec, errmsg)
-	server.freeRequest(req)
+
+	resp = args.Reply.Interface()
+	return
 }
 
 // ServeCodec is like ServeConn but uses the specified codec to
@@ -450,9 +465,21 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 	}
 
 	for {
-		service, mtype, req, argv, replyv, keepReading, err := server.readRequest(codec)
+		service, mtype, args, keepReading, err := server.readRequest(codec)
 		if err == nil {
-			go service.call(server, sending, mtype, conn, req, argv, replyv, codec)
+			go func() {
+				var (
+					reply interface{}
+					err   error
+				)
+
+				if server.onWrap != nil {
+					reply, err = server.onWrap(service.call)(mtype, conn, args)
+				}
+
+				server.sendResponse(sending, args.ServerReq, reply, args.Codec, err)
+				server.freeRequest(args.ServerReq)
+			}()
 			continue
 		}
 
@@ -466,21 +493,10 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 		switch err.(type) {
 		case ErrMissingServiceMethod:
 			if server.onMissingMethod != nil {
-				method, params := codec.GetCurrentRequest()
 				go func() {
-					var (
-						errMsg string
-						reply  interface{}
-						err    error
-					)
-
-					reply, err = server.onMissingMethod(conn, method, params)
-					if err != nil {
-						errMsg = err.Error()
-					}
-
-					server.sendResponse(sending, req, reply, codec, errMsg)
-					server.freeRequest(req)
+					reply, err := server.onMissingMethod(conn, codec.GetMethod(), codec.GetParams())
+					server.sendResponse(sending, args.ServerReq, reply, args.Codec, err)
+					server.freeRequest(args.ServerReq)
 				}()
 				continue
 			}
@@ -488,8 +504,8 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 
 		// send a response if we actually managed to read a header.
 		if req != nil {
-			server.sendResponse(sending, req, invalidRequest, codec, err.Error())
-			server.freeRequest(req)
+			server.sendResponse(sending, args.ServerReq, invalidRequest, args.Codec, err)
+			server.freeRequest(args.ServerReq)
 		}
 
 	}
@@ -542,8 +558,12 @@ func (server *Server) freeResponse(resp *Response) {
 	server.respLock.Unlock()
 }
 
-func (server *Server) readRequest(codec ServerCodec) (service *service, mtype *methodType, req *Request, argv, replyv reflect.Value, keepReading bool, err error) {
-	service, mtype, req, keepReading, err = server.readRequestHeader(codec)
+func (server *Server) readRequest(codec ServerCodec,
+) (service *service, mtype *methodType, args *Args, keepReading bool, err error) {
+	args = &Args{
+		Codec: codec,
+	}
+	service, mtype, args.ServerReq, keepReading, err = server.readRequestHeader(codec)
 	if err != nil {
 		if !keepReading {
 			return
@@ -559,20 +579,21 @@ func (server *Server) readRequest(codec ServerCodec) (service *service, mtype *m
 	// Decode the argument value.
 	argIsValue := false // if true, need to indirect before calling.
 	if mtype.ArgType.Kind() == reflect.Ptr {
-		argv = reflect.New(mtype.ArgType.Elem())
+		args.Arg = reflect.New(mtype.ArgType.Elem())
 	} else {
-		argv = reflect.New(mtype.ArgType)
+		args.Arg = reflect.New(mtype.ArgType)
 		argIsValue = true
 	}
+
 	// argv guaranteed to be a pointer now.
-	if err = codec.ReadRequestBody(argv.Interface()); err != nil {
+	if err = codec.ReadRequestBody(args.Arg.Interface()); err != nil {
 		return
 	}
 	if argIsValue {
-		argv = argv.Elem()
+		args.Arg = args.Arg.Elem()
 	}
 
-	replyv = reflect.New(mtype.ReplyType.Elem())
+	args.Reply = reflect.New(mtype.ReplyType.Elem())
 	return
 }
 
@@ -639,8 +660,10 @@ type ServerCodec interface {
 	WriteResponse(*Response, interface{}) error
 	WriteNotification(string, interface{}) error
 	WriteNotificationEx(string, interface{}) error
+	// Addtion params
+	GetParams() (parama json.RawMessage)
 	// Addtion method
-	GetCurrentRequest() (method string, params json.RawMessage)
+	GetMethod() (method string)
 
 	Close() error
 }
