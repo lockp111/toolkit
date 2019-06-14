@@ -168,11 +168,11 @@ type service struct {
 
 // Args for Call
 type Args struct {
-	mType     *methodType
-	ServerReq *Request
-	Codec     ServerCodec
-	Arg       reflect.Value
-	Reply     reflect.Value
+	mType  *methodType
+	RawReq json.RawMessage
+	Method string
+	Arg    reflect.Value
+	Reply  reflect.Value
 }
 
 // Request is a header written before every RPC call. It is used internally
@@ -465,7 +465,17 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 	}
 
 	for {
-		service, args, keepReading, err := server.readRequest(codec)
+		service, req, args, keepReading, err := server.readRequest(codec)
+		if debugLog && err != io.EOF {
+			log.Println(err)
+		}
+		if !keepReading {
+			break
+		}
+
+		args.RawReq = codec.GetParams()
+		args.Method = codec.GetMethod()
+
 		if err == nil {
 			go func() {
 				var (
@@ -477,26 +487,19 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 					reply, err = server.onWrap(service.call)(conn, args)
 				}
 
-				server.sendResponse(sending, args.ServerReq, reply, args.Codec, err)
-				server.freeRequest(args.ServerReq)
+				server.sendResponse(sending, req, reply, codec, err)
+				server.freeRequest(req)
 			}()
 			continue
-		}
-
-		if debugLog && err != io.EOF {
-			log.Println("rpc:", err)
-		}
-		if !keepReading {
-			break
 		}
 
 		switch err.(type) {
 		case ErrMissingServiceMethod:
 			if server.onMissingMethod != nil {
 				go func() {
-					reply, err := server.onMissingMethod(conn, codec.GetMethod(), codec.GetParams())
-					server.sendResponse(sending, args.ServerReq, reply, args.Codec, err)
-					server.freeRequest(args.ServerReq)
+					reply, err := server.onMissingMethod(conn, args.Method, args.RawReq)
+					server.sendResponse(sending, req, reply, codec, err)
+					server.freeRequest(req)
 				}()
 				continue
 			}
@@ -504,8 +507,8 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 
 		// send a response if we actually managed to read a header.
 		if req != nil {
-			server.sendResponse(sending, args.ServerReq, invalidRequest, args.Codec, err)
-			server.freeRequest(args.ServerReq)
+			server.sendResponse(sending, req, invalidRequest, codec, err)
+			server.freeRequest(req)
 		}
 
 	}
@@ -559,11 +562,9 @@ func (server *Server) freeResponse(resp *Response) {
 }
 
 func (server *Server) readRequest(codec ServerCodec,
-) (service *service, args *Args, keepReading bool, err error) {
-	args = &Args{
-		Codec: codec,
-	}
-	service, args.mType, args.ServerReq, keepReading, err = server.readRequestHeader(codec)
+) (service *service, req *Request, args *Args, keepReading bool, err error) {
+	args = &Args{}
+	service, req, args.mType, keepReading, err = server.readRequestHeader(codec)
 	if err != nil {
 		if !keepReading {
 			return
@@ -598,7 +599,7 @@ func (server *Server) readRequest(codec ServerCodec,
 }
 
 func (server *Server) readRequestHeader(codec ServerCodec,
-) (service *service, mtype *methodType, req *Request, keepReading bool, err error) {
+) (service *service, req *Request, mtype *methodType, keepReading bool, err error) {
 	// Grab the request header.
 	req = server.getRequest()
 	err = codec.ReadRequestHeader(req)
