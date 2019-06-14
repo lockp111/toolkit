@@ -168,6 +168,7 @@ type service struct {
 
 // Args for Call
 type Args struct {
+	mType     *methodType
 	ServerReq *Request
 	Codec     ServerCodec
 	Arg       reflect.Value
@@ -195,7 +196,7 @@ type Response struct {
 
 type ConnHandler func(*Conn)
 
-type ServiceHandler func(*methodType, *Conn, *Args) (interface{}, error)
+type ServiceHandler func(*Conn, *Args) (interface{}, error)
 
 type WrapHandler func(ServiceHandler) ServiceHandler
 
@@ -432,12 +433,11 @@ func (m *methodType) NumCalls() (n uint) {
 	return n
 }
 
-func (s *service) call(mtype *methodType, conn *Conn, args *Args,
-) (resp interface{}, err error) {
-	mtype.Lock()
-	mtype.numCalls++
-	mtype.Unlock()
-	function := mtype.method.Func
+func (s *service) call(conn *Conn, args *Args) (resp interface{}, err error) {
+	args.mType.Lock()
+	args.mType.numCalls++
+	args.mType.Unlock()
+	function := args.mType.method.Func
 	// Invoke the method, providing a new value for the reply.
 	returnValues := function.Call([]reflect.Value{s.rcvr,
 		reflect.ValueOf(conn), args.Arg, args.Reply})
@@ -465,7 +465,7 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 	}
 
 	for {
-		service, mtype, args, keepReading, err := server.readRequest(codec)
+		service, args, keepReading, err := server.readRequest(codec)
 		if err == nil {
 			go func() {
 				var (
@@ -474,7 +474,7 @@ func (server *Server) ServeCodec(req *http.Request, codec ServerCodec, onInit Co
 				)
 
 				if server.onWrap != nil {
-					reply, err = server.onWrap(service.call)(mtype, conn, args)
+					reply, err = server.onWrap(service.call)(conn, args)
 				}
 
 				server.sendResponse(sending, args.ServerReq, reply, args.Codec, err)
@@ -559,11 +559,11 @@ func (server *Server) freeResponse(resp *Response) {
 }
 
 func (server *Server) readRequest(codec ServerCodec,
-) (service *service, mtype *methodType, args *Args, keepReading bool, err error) {
+) (service *service, args *Args, keepReading bool, err error) {
 	args = &Args{
 		Codec: codec,
 	}
-	service, mtype, args.ServerReq, keepReading, err = server.readRequestHeader(codec)
+	service, args.mType, args.ServerReq, keepReading, err = server.readRequestHeader(codec)
 	if err != nil {
 		if !keepReading {
 			return
@@ -578,10 +578,10 @@ func (server *Server) readRequest(codec ServerCodec,
 
 	// Decode the argument value.
 	argIsValue := false // if true, need to indirect before calling.
-	if mtype.ArgType.Kind() == reflect.Ptr {
-		args.Arg = reflect.New(mtype.ArgType.Elem())
+	if args.mType.ArgType.Kind() == reflect.Ptr {
+		args.Arg = reflect.New(args.mType.ArgType.Elem())
 	} else {
-		args.Arg = reflect.New(mtype.ArgType)
+		args.Arg = reflect.New(args.mType.ArgType)
 		argIsValue = true
 	}
 
@@ -593,11 +593,12 @@ func (server *Server) readRequest(codec ServerCodec,
 		args.Arg = args.Arg.Elem()
 	}
 
-	args.Reply = reflect.New(mtype.ReplyType.Elem())
+	args.Reply = reflect.New(args.mType.ReplyType.Elem())
 	return
 }
 
-func (server *Server) readRequestHeader(codec ServerCodec) (service *service, mtype *methodType, req *Request, keepReading bool, err error) {
+func (server *Server) readRequestHeader(codec ServerCodec,
+) (service *service, mtype *methodType, req *Request, keepReading bool, err error) {
 	// Grab the request header.
 	req = server.getRequest()
 	err = codec.ReadRequestHeader(req)
