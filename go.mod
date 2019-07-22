@@ -3,8 +3,9 @@ module github.com/lockp111/toolkit
 go 1.12
 
 require (
-	cloud.google.com/go v0.41.0 // indirect
+	cloud.google.com/go v0.43.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190720212816-23f0cad53f5c // indirect
 	github.com/doug-martin/goqu/v6 v6.1.0
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/fatih/structs v1.1.0
@@ -17,6 +18,8 @@ require (
 	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
+	github.com/lib/pq v1.2.0 // indirect
+	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/micro/go-micro v1.7.0
 	github.com/miekg/dns v1.1.15 // indirect
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
@@ -24,5 +27,5 @@ require (
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
-	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
+	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
 )

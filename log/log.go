@@ -58,7 +58,7 @@ func SettingLog(config *Config) error {
 			}
 		}
 
-		w, err := rotatelogs.New(config.Path+".%Y%m%d",
+		w, err := rotatelogs.New(config.Path+"-%Y%m%d.log",
 			rotatelogs.WithRotationCount(30),
 			rotatelogs.WithRotationTime(24*time.Hour),
 		)
