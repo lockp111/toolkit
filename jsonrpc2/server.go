@@ -137,7 +137,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/lockp111/toolkit/log"
+	log "github.com/sirupsen/logrus"
 )
 
 const (

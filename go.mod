@@ -5,8 +5,8 @@ go 1.12
 require (
 	cloud.google.com/go v0.43.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190724012636-11b2859924c1 // indirect
-	github.com/doug-martin/goqu/v6 v6.1.0
+	github.com/denisenkom/go-mssqldb v0.0.0-20190806190131-db2462fef53b // indirect
+	github.com/doug-martin/goqu/v8 v8.3.0
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/go-sql-driver/mysql v1.4.1
@@ -26,4 +26,5 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/tebeka/strftime v0.1.3 // indirect
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
+	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
 )

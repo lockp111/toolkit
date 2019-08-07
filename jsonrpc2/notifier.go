@@ -3,7 +3,7 @@ package jsonrpc2
 import (
 	"sync"
 
-	"github.com/lockp111/toolkit/log"
+	log "github.com/sirupsen/logrus"
 )
 
 type notify struct {

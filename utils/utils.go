@@ -3,8 +3,9 @@ package utils
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"math"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // ErrExit ...
