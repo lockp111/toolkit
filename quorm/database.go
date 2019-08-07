@@ -10,14 +10,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Quorm ...
-type Quorm struct {
+// DataBase ...
+type DataBase struct {
 	*gorm.DB
 	Goqu *goqu.Database
 }
 
 // Connect ...
-func (db *Quorm) Connect(debug bool, dialect, dburl string) error {
+func (db *DataBase) Connect(debug bool, dialect, dburl string) error {
 	gdb, err := gorm.Open(dialect, dburl)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func (db *Quorm) Connect(debug bool, dialect, dburl string) error {
 }
 
 // PageQuery ...
-func (db *Quorm) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex, pageSize int64,
+func (db *DataBase) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex, pageSize int64,
 	outRows interface{}, selectEx ...interface{}) (int64, error) {
 
 	selectQuery := query
@@ -66,7 +66,7 @@ func (db *Quorm) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex
 }
 
 // QueryCount ...
-func (db *Quorm) QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
+func (db *DataBase) QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
 ) (int64, error) {
 	var (
 		selectQuery = query
@@ -94,7 +94,7 @@ func (db *Quorm) QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
 }
 
 // QueryScan ...
-func (db *Quorm) QueryScan(query *goqu.SelectDataset, outRows interface{},
+func (db *DataBase) QueryScan(query *goqu.SelectDataset, outRows interface{},
 	selectEx ...interface{}) error {
 
 	selectQuery := query
@@ -117,7 +117,7 @@ func (db *Quorm) QueryScan(query *goqu.SelectDataset, outRows interface{},
 }
 
 // Transaction ...
-func (db *Quorm) Transaction(f func(*gorm.DB) error) error {
+func (db *DataBase) Transaction(f func(*gorm.DB) error) error {
 
 	gdb := db.Begin()
 

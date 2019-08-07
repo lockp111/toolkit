@@ -10,11 +10,11 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var db = new(Quorm)
+var db = new(DataBase)
 
 // NewDB ...
-func NewDB() *Quorm {
-	return &Quorm{}
+func NewDB() *DataBase {
+	return &DataBase{}
 }
 
 // Open ...
@@ -23,7 +23,7 @@ func Open(debug bool, dialect, dburl string) error {
 }
 
 // DB ...
-func DB() *Quorm {
+func DB() *DataBase {
 	return db
 }
 
