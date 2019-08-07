@@ -3,11 +3,11 @@ package quorm
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"time"
 
 	"github.com/doug-martin/goqu/v8"
 	"github.com/doug-martin/goqu/v8/exp"
+	"github.com/jinzhu/gorm"
 )
 
 var db = new(Quorm)
@@ -61,6 +61,21 @@ func StringOutRows(rows []string, pri ...string) []exp.AliasedExpression {
 func Now() *time.Time {
 	t := time.Now()
 	return &t
+}
+
+// RecordCount ...
+func RecordCount(tx *gorm.DB) (int64, error) {
+	c := &struct {
+		Size int64
+	}{}
+
+	err := tx.Select("count(*) as `size`").Scan(c).Error
+	return c.Size, err
+}
+
+// Transaction ...
+func Transaction(f func(*gorm.DB) error) error {
+	return db.Transaction(f)
 }
 
 // Query ...
