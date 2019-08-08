@@ -32,8 +32,8 @@ func (a *Alias) I(col ...string) exp.IdentifierExpression {
 	return a.IdentifierExpression
 }
 
-// S ...
-func (a *Alias) S(col string) string {
+// C ...
+func (a *Alias) C(col string) string {
 	if len(a.GetTable()) == 0 {
 		return col
 	}
