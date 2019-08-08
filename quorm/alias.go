@@ -65,15 +65,31 @@ func (c *Alias) Col(col string, alias ...string) *Alias {
 	return c
 }
 
-// Cols ...
-func (c *Alias) Cols() []exp.AliasedExpression {
-	cols := make([]exp.AliasedExpression, 0, len(c.cols))
+func (c *Alias) getCols() []interface{} {
+	cols := make([]interface{}, 0, len(c.cols))
 
 	c.Lock()
 	for col, alias := range c.cols {
 		cols = append(cols, c.exp.Col(col).As(alias))
 	}
 	c.Unlock()
+
+	return cols
+}
+
+// Cols ...
+func Cols(alias ...*Alias) []interface{} {
+	cols := make([]interface{}, 0, 4)
+
+	for _, a := range alias {
+		cs := a.getCols()
+		if len(cs) == 0 {
+			cols = append(cols, a.All())
+			continue
+		}
+
+		cols = append(cols, cs...)
+	}
 
 	return cols
 }
