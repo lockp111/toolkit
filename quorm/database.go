@@ -80,7 +80,7 @@ func (db *DataBase) QueryCount(query *goqu.SelectDataset, selectEx ...interface{
 	sql, args, err := db.Goqu.From(
 		selectQuery.As("query_count"),
 	).Select(
-		goqu.COUNT(goqu.L("*")),
+		goqu.COUNT(goqu.Star()),
 	).Prepared(true).ToSQL()
 	if err != nil {
 		return 0, err

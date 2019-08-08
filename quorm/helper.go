@@ -139,6 +139,17 @@ func QueryRows(scaner *gorm.DB, query *goqu.SelectDataset,
 	return scaner.Raw(sql, args...).Rows()
 }
 
+// Exec ...
+func Exec(tx *gorm.DB, update *goqu.UpdateDataset) (rowsAffected int64, err error) {
+	sql, args, err := update.Prepared(true).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+
+	ret := tx.Exec(sql, args)
+	return ret.RowsAffected, ret.Error
+}
+
 // QueryCount ...
 func QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
 ) (int64, error) {
