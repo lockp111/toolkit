@@ -27,25 +27,18 @@ func FilterStruct(raw map[string]interface{}, log interface{}) error {
 		last[key] = value
 	}
 
-	for key := range structs.Map(log) {
+	logMap := structs.Map(log)
+	for key := range logMap {
 		delete(last, key)
 	}
 
-	jsonstr, err := json.Marshal(last)
-	if err != nil {
-		return err
-	}
-
 	// set log_data
-	raw["Data"] = string(jsonstr)
-	jsonstr, err = json.Marshal(raw)
-	if err != nil {
-		return err
-	}
+	lastStr, _ := json.Marshal(last)
+	raw["Data"] = string(lastStr)
 
 	// jsonstr to struct
-	err = json.Unmarshal(jsonstr, log)
-	if err != nil {
+	jsonstr, _ := json.Marshal(raw)
+	if err := json.Unmarshal(jsonstr, log); err != nil {
 		return err
 	}
 
