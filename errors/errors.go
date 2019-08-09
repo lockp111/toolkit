@@ -7,10 +7,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// unknow code
+const (
+	UnknowCode = -1
+)
+
 // APIError ...
 type APIError struct {
 	Code     int32
-	Status   int
+	Status   int32
 	Detail   string
 	Internal string      `json:",omitempty"`
 	Content  interface{} `json:",omitempty"`
@@ -26,6 +31,7 @@ func ParseAPIError(err error) *APIError {
 		retErr = err.(*APIError)
 	default:
 		retErr = &APIError{
+			Code:   UnknowCode,
 			Status: 500,
 			Detail: err.Error(),
 		}
@@ -51,6 +57,7 @@ func Parse(err string) *APIError {
 
 	return &APIError{
 		Status:   500,
+		Code:     UnknowCode,
 		Detail:   http.StatusText(500),
 		Internal: err,
 	}

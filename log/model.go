@@ -127,9 +127,9 @@ type APILog struct {
 	CreatedAt       time.Time
 	Data            string
 	API             string
-	Method          string
 	ElapsedTime     float64
 	Status          int
+	Code            int32
 	UserID          uint64
 	UserName        string
 	SourceIP        string
@@ -160,9 +160,11 @@ type OperLog struct {
 	Message   string
 	CreatedAt time.Time
 	Data      string
+	Method    string
 	UserID    string
 	UserName  string
 	Status    int
+	Code      int32
 	SourceIP  string
 }
 
