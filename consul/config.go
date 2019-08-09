@@ -34,8 +34,7 @@ func init() {
 
 func getPrefixedPath(path ...string) []string {
 	prefixPaths := strings.Split(consulConf.prefix, "/")
-	path = append(prefixPaths[1:], path...)
-
+	path = append(prefixPaths, path...)
 	return path
 }
 
@@ -47,14 +46,16 @@ func GetAddress() string {
 // InitSource Directly init source. Use it without micro service
 func InitSource(addr string, prefix ...string) {
 	consulConf.address = addr
+
 	var opts = []source.Option{consul.WithAddress(consulConf.address)}
 	if len(prefix) != 0 {
-		consulConf.prefix = prefix[0]
+		consulConf.prefix = strings.Trim(prefix[0], "/")
 		opts = append(opts,
 			consul.WithPrefix(consulConf.prefix),
-			consul.StripPrefix(true),
+			consul.StripPrefix(false),
 		)
 	}
+
 	consulConf.source = consul.NewSource(opts...)
 }
 
