@@ -116,7 +116,7 @@ func QueryFirst(scaner *gorm.DB, query *goqu.SelectDataset,
 	}
 
 	// use gorm to scan rows
-	err = scaner.Raw(sql, args...).First(outRow).Error
+	err = scaner.Raw(sql, args...).Limit(1).Find(outRow).Error
 	if err != nil {
 		return err
 	}
