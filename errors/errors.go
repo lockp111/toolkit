@@ -15,7 +15,7 @@ const (
 // APIError ...
 type APIError struct {
 	Code     int32
-	Status   int32
+	Status   int
 	Detail   string
 	Internal string      `json:",omitempty"`
 	Content  interface{} `json:",omitempty"`
