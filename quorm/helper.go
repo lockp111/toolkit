@@ -146,7 +146,7 @@ func Exec(tx *gorm.DB, update *goqu.UpdateDataset) (rowsAffected int64, err erro
 		return 0, err
 	}
 
-	ret := tx.Exec(sql, args)
+	ret := tx.Exec(sql, args...)
 	return ret.RowsAffected, ret.Error
 }
 
