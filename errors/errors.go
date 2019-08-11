@@ -46,21 +46,21 @@ func (e *APIError) Error() string {
 
 // Parse ...
 func Parse(err string) *APIError {
-	if json.Valid([]byte(err)) {
-		api := new(APIError)
-		e := json.Unmarshal([]byte(err), api)
-		if e != nil {
-			api.Detail = err
-		}
-		return api
-	}
-
-	return &APIError{
+	api := &APIError{
 		Status:   500,
 		Code:     UnknowCode,
 		Detail:   http.StatusText(500),
 		Internal: err,
 	}
+
+	if json.Valid([]byte(err)) {
+		e := json.Unmarshal([]byte(err), api)
+		if e != nil {
+			api.Detail = err
+		}
+	}
+
+	return api
 }
 
 // Error ...
