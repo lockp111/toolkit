@@ -35,23 +35,18 @@ func (db *DataBase) Connect(debug bool, dialect, dburl string) error {
 
 // PageQuery ...
 func (db *DataBase) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex, pageSize int64,
-	outRows interface{}, selectEx ...interface{}) (int64, error) {
+	outRows interface{}) (int64, error) {
 
-	selectQuery := query
-	if selectEx != nil {
-		selectQuery = query.Select(selectEx...)
-	}
-
-	count, err := db.QueryCount(query, selectEx...)
+	count, err := db.QueryCount(query)
 	if err != nil {
 		return 0, err
 	}
 
-	selectQuery = query.
+	query = query.
 		Offset(uint((pageIndex - 1) * pageSize)).
 		Limit(uint(pageSize))
 
-	sql, args, err := selectQuery.Prepared(true).ToSQL()
+	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
 		return 0, err
 	}
@@ -66,19 +61,13 @@ func (db *DataBase) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIn
 }
 
 // QueryCount ...
-func (db *DataBase) QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
-) (int64, error) {
+func (db *DataBase) QueryCount(query *goqu.SelectDataset) (int64, error) {
 	var (
-		selectQuery = query
-		count       int64
+		count int64
 	)
 
-	if selectEx != nil {
-		selectQuery = query.Select(selectEx...)
-	}
-
 	sql, args, err := db.Goqu.From(
-		selectQuery.As("query_count"),
+		query.As("query_count"),
 	).Select(
 		goqu.COUNT(goqu.Star()),
 	).Prepared(true).ToSQL()
@@ -94,26 +83,14 @@ func (db *DataBase) QueryCount(query *goqu.SelectDataset, selectEx ...interface{
 }
 
 // QueryScan ...
-func (db *DataBase) QueryScan(query *goqu.SelectDataset, outRows interface{},
-	selectEx ...interface{}) error {
-
-	selectQuery := query
-	if selectEx != nil {
-		selectQuery = query.Select(selectEx...)
-	}
-
-	sql, args, err := selectQuery.Prepared(true).ToSQL()
+func (db *DataBase) QueryScan(query *goqu.SelectDataset, outRows interface{}) error {
+	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
 		return err
 	}
 
 	// use gorm to scan rows
-	err = db.Raw(sql, args...).Scan(outRows).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.Raw(sql, args...).Scan(outRows).Error
 }
 
 // Transaction ...
@@ -141,4 +118,14 @@ func (db *DataBase) Transaction(f func(*gorm.DB) error) error {
 	}
 
 	return nil
+}
+
+// QueryPluck ...
+func (db *DataBase) QueryPluck(query *goqu.SelectDataset, column string, outRows interface{}) error {
+	sql, args, err := query.Prepared(true).ToSQL()
+	if err != nil {
+		return err
+	}
+
+	return db.Raw(sql, args...).Pluck(column, outRows).Error
 }

@@ -151,19 +151,23 @@ func Exec(tx *gorm.DB, update *goqu.UpdateDataset) (rowsAffected int64, err erro
 }
 
 // QueryCount ...
-func QueryCount(query *goqu.SelectDataset, selectEx ...interface{},
-) (int64, error) {
-	return db.QueryCount(query, selectEx...)
+func QueryCount(query *goqu.SelectDataset) (int64, error) {
+	return db.QueryCount(query)
 }
 
 // PageQuery ...
 func PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex int64,
-	pageSize int64, outRows interface{}, selectEx ...interface{}) (int64, error) {
-	return db.PageQuery(scaner, query, pageIndex, pageSize, outRows, selectEx...)
+	pageSize int64, outRows interface{}) (int64, error) {
+	return db.PageQuery(scaner, query, pageIndex, pageSize, outRows)
 }
 
 // QueryScan ...
 func QueryScan(query *goqu.SelectDataset, outRows interface{},
 	selectEx ...interface{}) error {
-	return db.QueryScan(query, outRows, selectEx...)
+	return db.QueryScan(query, outRows)
+}
+
+// QueryPluck ...
+func QueryPluck(query *goqu.SelectDataset, column string, outRows interface{}) error {
+	return db.QueryPluck(query, column, outRows)
 }
