@@ -80,14 +80,9 @@ func Transaction(f func(*gorm.DB) error) error {
 
 // Query ...
 func Query(scaner *gorm.DB, query *goqu.SelectDataset,
-	outRows interface{}, selectEx ...interface{}) error {
+	outRows interface{}) error {
 
-	selectQuery := query
-	if selectEx != nil {
-		selectQuery = query.Select(selectEx...)
-	}
-
-	sql, args, err := selectQuery.Prepared(true).ToSQL()
+	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
 		return err
 	}
@@ -103,14 +98,9 @@ func Query(scaner *gorm.DB, query *goqu.SelectDataset,
 
 // QueryFirst ..
 func QueryFirst(scaner *gorm.DB, query *goqu.SelectDataset,
-	outRow interface{}, selectEx ...interface{}) error {
+	outRow interface{}) error {
 
-	selectQuery := query
-	if selectEx != nil {
-		query = query.Select(selectEx...)
-	}
-
-	sql, args, err := selectQuery.Prepared(true).ToSQL()
+	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
 		return err
 	}
@@ -125,14 +115,8 @@ func QueryFirst(scaner *gorm.DB, query *goqu.SelectDataset,
 }
 
 // QueryRows ..
-func QueryRows(scaner *gorm.DB, query *goqu.SelectDataset,
-	selectEx ...interface{}) (*sql.Rows, error) {
-
-	selectQuery := query
-	if selectEx != nil {
-		selectQuery = selectQuery.Select(selectEx...)
-	}
-	sql, args, err := selectQuery.Prepared(true).ToSQL()
+func QueryRows(scaner *gorm.DB, query *goqu.SelectDataset) (*sql.Rows, error) {
+	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +146,7 @@ func PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex int64,
 }
 
 // QueryScan ...
-func QueryScan(query *goqu.SelectDataset, outRows interface{},
-	selectEx ...interface{}) error {
+func QueryScan(query *goqu.SelectDataset, outRows interface{}) error {
 	return db.QueryScan(query, outRows)
 }
 
