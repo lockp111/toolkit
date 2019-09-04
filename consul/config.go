@@ -65,10 +65,9 @@ func ConfigGet(x interface{}, path ...string) error {
 	if err := conf.Load(consulConf.source); err != nil {
 		return err
 	}
-
-	path = getPrefixedPath(path...)
 	defer conf.Close()
 
+	path = getPrefixedPath(path...)
 	if err := conf.Get(path...).Scan(x); err != nil {
 		return err
 	}

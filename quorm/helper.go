@@ -115,12 +115,25 @@ func QueryFirst(scaner *gorm.DB, query *goqu.SelectDataset,
 }
 
 // QueryRows ..
-func QueryRows(scaner *gorm.DB, query *goqu.SelectDataset) (*sql.Rows, error) {
+func QueryRows(scaner *gorm.DB, query *goqu.SelectDataset, fn func(*sql.Rows) error) error {
 	sql, args, err := query.Prepared(true).ToSQL()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return scaner.Raw(sql, args...).Rows()
+
+	rows, err := scaner.Raw(sql, args...).Rows()
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := fn(rows); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Exec ...
