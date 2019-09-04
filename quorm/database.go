@@ -1,6 +1,8 @@
 package quorm
 
 import (
+	"database/sql"
+
 	"github.com/doug-martin/goqu/v8"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
@@ -91,6 +93,28 @@ func (db *DataBase) QueryScan(query *goqu.SelectDataset, outRows interface{}) er
 
 	// use gorm to scan rows
 	return db.Raw(sql, args...).Scan(outRows).Error
+}
+
+// QueryRows ...
+func (db *DataBase) QueryRows(query *goqu.SelectDataset, fn func(*sql.Rows) error) error {
+	sql, args, err := query.Prepared(true).ToSQL()
+	if err != nil {
+		return err
+	}
+
+	rows, err := db.Raw(sql, args...).Rows()
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := fn(rows); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Transaction ...
