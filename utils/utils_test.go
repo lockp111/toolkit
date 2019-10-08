@@ -10,3 +10,9 @@ func TestFixedRound(t *testing.T) {
 	t.Log(b)
 	t.Fail()
 }
+
+func TestRandomString(t *testing.T) {
+	s := RandomString(32)
+	t.Log(s)
+	t.Fail()
+}
