@@ -3,7 +3,6 @@ package sms
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
 )
@@ -14,13 +13,13 @@ type AWSSender struct {
 }
 
 // NewAWSSender ...
-func NewAWSSender(id, secret string) *AWSSender {
+func NewAWSSender(id, secret, token, regions string) *AWSSender {
 	sess := session.New(&aws.Config{
-		Region: aws.String(endpoints.ApNortheast1RegionID),
+		Region: aws.String(regions),
 		Credentials: credentials.NewStaticCredentials(
 			id,
 			secret,
-			"",
+			token,
 		),
 	})
 
@@ -40,6 +39,8 @@ func (s *AWSSender) Send(phone, content string) (messageID string, err error) {
 		return
 	}
 
-	messageID = *resp.MessageId
+	if resp.MessageId != nil {
+		messageID = *resp.MessageId
+	}
 	return
 }
