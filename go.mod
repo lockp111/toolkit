@@ -3,6 +3,7 @@ module github.com/lockp111/toolkit
 go 1.12
 
 require (
+	github.com/aws/aws-sdk-go v1.25.8
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20191001013358-cfbb681360f0 // indirect
 	github.com/doug-martin/goqu/v8 v8.6.0
