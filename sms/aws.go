@@ -1,4 +1,4 @@
-package verifycode
+package sms
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
