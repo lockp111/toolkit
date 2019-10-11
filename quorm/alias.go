@@ -6,7 +6,17 @@ import (
 )
 
 // A ...
-func A(table, alias string, schema ...string) *Alias {
+func A(alias string) *Alias {
+	c := &Alias{
+		nil,
+		goqu.T(alias),
+	}
+
+	return c
+}
+
+// T ...
+func T(table, alias string, schema ...string) *Alias {
 	t := goqu.T(table)
 	if len(schema) != 0 {
 		t = t.Schema(schema[0])
@@ -37,14 +47,14 @@ func (a *Alias) I(col ...string) exp.IdentifierExpression {
 
 // C ...
 func (a *Alias) C(col string) string {
-	if len(a.GetTable()) == 0 {
+	if len(a.IdentifierExpression.GetTable()) == 0 {
 		return col
 	}
 
-	return a.GetTable() + "." + col
+	return a.IdentifierExpression.GetTable() + "." + col
 }
 
-// Table ...
-func (a *Alias) Table() exp.AliasedExpression {
+// GetTable ...
+func (a *Alias) GetTable() exp.AliasedExpression {
 	return a.table
 }
