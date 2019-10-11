@@ -6,17 +6,7 @@ import (
 )
 
 // A ...
-func A(alias string) *Alias {
-	c := &Alias{
-		nil,
-		goqu.T(alias),
-	}
-
-	return c
-}
-
-// T ...
-func T(table, alias string, schema ...string) *Alias {
+func A(table, alias string, schema ...string) *Alias {
 	t := goqu.T(table)
 	if len(schema) != 0 {
 		t = t.Schema(schema[0])
