@@ -6,13 +6,15 @@ import (
 )
 
 // A ...
-func A(table string, schema ...string) *Alias {
-	c := &Alias{
-		goqu.T(table),
+func A(table, alias string, schema ...string) *Alias {
+	t := goqu.T(table)
+	if len(schema) != 0 {
+		t = t.Schema(schema[0])
 	}
 
-	if len(schema) != 0 {
-		c.IdentifierExpression = c.Schema(schema[0])
+	c := &Alias{
+		t.As(alias),
+		goqu.T(alias),
 	}
 
 	return c
@@ -20,6 +22,7 @@ func A(table string, schema ...string) *Alias {
 
 // Alias ...
 type Alias struct {
+	table exp.AliasedExpression
 	exp.IdentifierExpression
 }
 
@@ -38,10 +41,10 @@ func (a *Alias) C(col string) string {
 		return col
 	}
 
-	prefix := a.GetTable()
-	if len(a.GetSchema()) != 0 {
-		prefix = a.GetSchema() + "." + prefix
-	}
+	return a.GetTable() + "." + col
+}
 
-	return prefix + "." + col
+// Table ...
+func (a *Alias) Table() exp.AliasedExpression {
+	return a.table
 }
