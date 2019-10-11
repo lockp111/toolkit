@@ -58,15 +58,23 @@ func LoadJSONFile(filename string, v interface{}) error {
 }
 
 // RandomBytes ...
-func RandomBytes(n int) []byte {
+func RandomBytes(n int, seed ...string) []byte {
+	var (
+		seedBytes = letterBytes
+	)
+
+	if len(seed) != 0 {
+		seedBytes = seed[0]
+	}
+
 	b := make([]byte, n)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
 	for i, cache, remain := n-1, rand.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
 			cache, remain = rand.Int63(), letterIdxMax
 		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
+		if idx := int(cache & letterIdxMask); idx < len(seedBytes) {
+			b[i] = seedBytes[idx]
 			i--
 		}
 		cache >>= letterIdxBits
@@ -76,6 +84,6 @@ func RandomBytes(n int) []byte {
 }
 
 // RandomString ...
-func RandomString(n int) string {
-	return string(RandomBytes(n))
+func RandomString(n int, seed ...string) string {
+	return string(RandomBytes(n, seed...))
 }
