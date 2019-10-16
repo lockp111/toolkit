@@ -3,7 +3,7 @@ module github.com/lockp111/toolkit
 go 1.12
 
 require (
-	github.com/aws/aws-sdk-go v1.25.11
+	github.com/aws/aws-sdk-go v1.25.13
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20191001013358-cfbb681360f0 // indirect
 	github.com/doug-martin/goqu/v8 v8.6.0
@@ -29,7 +29,7 @@ require (
 	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tebeka/strftime v0.1.3 // indirect
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
-	golang.org/x/net v0.0.0-20191011234655-491137f69257 // indirect
+	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20191010194322-b09406accb47 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
