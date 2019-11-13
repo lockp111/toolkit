@@ -3,12 +3,12 @@ package quorm
 import (
 	"database/sql"
 
-	"github.com/doug-martin/goqu/v8"
+	"github.com/doug-martin/goqu/v9"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 
 	// mysql drive
-	_ "github.com/doug-martin/goqu/v8/dialect/mysql"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
 )
 

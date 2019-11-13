@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	goqu "github.com/doug-martin/goqu/v8"
+	goqu "github.com/doug-martin/goqu/v9"
 )
 
 // QueryOp ..
