@@ -7,7 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/lestrrat/go-file-rotatelogs"
-	"github.com/lockp111/toolkit/utils"
+	"github.com/lockp111/toolkit/v2/utils"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 )

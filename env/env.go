@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/lestrrat/go-file-rotatelogs"
-	"github.com/lockp111/toolkit/utils"
+	"github.com/lockp111/toolkit/v2/utils"
 	log "github.com/sirupsen/logrus"
 )
 
