@@ -21,3 +21,18 @@ func TestBytes(t *testing.T) {
 
 	t.Log(s)
 }
+
+func TestMap(t *testing.T) {
+	var m = make(map[string]int)
+	m["1"] = 1
+	m["2"] = 2
+	m["3"] = 3
+	m["4"] = 4
+
+	for k := range m {
+		delete(m, k)
+	}
+
+	t.Log(m)
+	t.Fail()
+}
