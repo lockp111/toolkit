@@ -1,21 +1,20 @@
 package consul
 
-var kvConf *Config
+var kvConf = NewConfig()
 
 // Init ...
 func Init(opts ...Option) error {
-	if kvConf != nil {
-		return nil
+	for _, o := range opts {
+		o(kvConf)
 	}
 
-	kvConf = NewConfig(opts...)
 	return kvConf.Connect()
 }
 
 // Reset ...
 func Reset(opts ...Option) error {
 	kvConf.WatchStop()
-	kvConf = nil
+	kvConf = NewConfig()
 	return Init(opts...)
 }
 
