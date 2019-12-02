@@ -13,7 +13,7 @@ func Init(opts ...Option) error {
 
 // Reset ...
 func Reset(opts ...Option) error {
-	kvConf.WatchStop()
+	kvConf.StopWatch()
 	kvConf = NewConfig()
 	return Init(opts...)
 }
@@ -33,12 +33,12 @@ func Get(keys ...string) *Result {
 	return kvConf.Get(keys...)
 }
 
-// WatchStart ...
-func WatchStart(path string, handler func(*Result)) error {
-	return kvConf.WatchStart(path, handler)
+// Watch ...
+func Watch(path string, handler func(*Result)) error {
+	return kvConf.Watch(path, handler)
 }
 
-// WatchStop ...
-func WatchStop(path ...string) {
-	kvConf.WatchStop(path...)
+// StopWatch ...
+func StopWatch(path ...string) {
+	kvConf.StopWatch(path...)
 }
