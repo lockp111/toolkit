@@ -35,6 +35,11 @@ func (db *DataBase) Connect(debug bool, dialect, dburl string) error {
 	return nil
 }
 
+// Close ...
+func (db *DataBase) Close() error {
+	return db.DB.Close()
+}
+
 // PageQuery ...
 func (db *DataBase) PageQuery(scaner *gorm.DB, query *goqu.SelectDataset, pageIndex, pageSize int64,
 	outRows interface{}) (int64, error) {

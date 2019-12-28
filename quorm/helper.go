@@ -22,6 +22,11 @@ func Open(debug bool, dialect, dburl string) error {
 	return db.Connect(debug, dialect, dburl)
 }
 
+// Close ...
+func Close() error {
+	return db.Close()
+}
+
 // DB ...
 func DB() *DataBase {
 	return db
