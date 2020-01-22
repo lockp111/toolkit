@@ -14,14 +14,14 @@ import (
 type TelegramHook struct {
 	Blacklist map[string]bool
 	URL       string
-	ChatID    int32
+	ChatID    int64
 	ON        bool
 }
 
 var telegram = &TelegramHook{}
 
 // NewTelegramHook ...
-func NewTelegramHook(url string, chatid int32, black map[string]bool) *TelegramHook {
+func NewTelegramHook(url string, chatid int64, black map[string]bool) *TelegramHook {
 	telegram = &TelegramHook{
 		URL:       url,
 		Blacklist: black,
@@ -66,7 +66,7 @@ func (hook *TelegramHook) Fire(entry *logrus.Entry) error {
 // Alert ...
 func (hook *TelegramHook) Alert(entry *logrus.Entry) {
 	type Data struct {
-		ChatID    int32  `json:"chat_id"`
+		ChatID    int64  `json:"chat_id"`
 		ParseMode string `json:"parse_mode"`
 		Text      string `json:"text"`
 	}

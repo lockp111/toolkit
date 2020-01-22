@@ -20,7 +20,7 @@ type Config struct {
 	Logstash       string
 	DingDingURL    string
 	TelegramURL    string
-	TelegramChatID int32
+	TelegramChatID int64
 	FileContext    bool
 }
 
