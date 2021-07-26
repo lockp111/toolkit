@@ -41,8 +41,7 @@ require (
 	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tebeka/strftime v0.1.4 // indirect
-	github.com/tidwall/gjson v1.6.0
-	github.com/tidwall/pretty v1.0.1 // indirect
+	github.com/tidwall/gjson v1.6.5
 	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
